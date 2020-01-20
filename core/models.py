@@ -7,3 +7,5 @@ class Profile(models.Model):
     gender = models.CharField(choices=[('man', '남성'),('woman', '여성')] ,max_length=5)
     email = models.EmailField()
 
+    def __str__(self):
+        return self.name
