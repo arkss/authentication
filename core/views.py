@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import auth, messages
-from django.contrib.auth.models import User
 from .models import Profile
 
 def main(request):
@@ -12,7 +11,7 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = auth.authenticate(request, username=username, password=password)
+
         if user is not None:
             auth.login(request, user)
         else:
@@ -23,7 +22,6 @@ def login(request):
 
 
 def sign_up(request):
-    print(request.POST, "$$$$$$$$$$$")
     if request.method == 'POST':
         password = request.POST.get('password1')
         check_password = request.POST.get('password2')
@@ -32,18 +30,13 @@ def sign_up(request):
             name = request.POST['name']
             gender = request.POST['gender']
             email = request.POST['email']
-            user = User.objects.create_user(
-                username=username,
-                password=password
-            )
+
             profile = Profile(
-                user=user,
                 name=name,
                 gender=gender,
                 email=email
             )
             profile.save()
-            user.save()
             return redirect('core:main')
         else:
             messages.error(request, "비밀번호가 일치하지 않습니다.")
@@ -75,3 +68,4 @@ def id_overlap_check(request):
     }
 
     return JsonResponse(context)
+
