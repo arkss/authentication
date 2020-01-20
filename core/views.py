@@ -32,10 +32,12 @@ def sign_up(request):
             email = request.POST['email']
 
             profile = Profile(
+                username=username,
                 name=name,
                 gender=gender,
                 email=email
             )
+            profile.set_hash_password(password)
             profile.save()
             return redirect('core:main')
         else:
@@ -68,4 +70,3 @@ def id_overlap_check(request):
     }
 
     return JsonResponse(context)
-

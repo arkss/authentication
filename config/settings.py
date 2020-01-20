@@ -72,9 +72,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
  
-DATABASE_ROUTERS = [
-    'core.router.MyRouter',
-] 
+# DATABASE_ROUTERS = [
+#     'core.router.MyRouter',
+# ] 
 
 DATABASES = {
     'default': {
@@ -88,17 +88,17 @@ DATABASES = {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
         }
     },
-    'salt_db': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'laundry_runner_salt',
-        'USER': 'minsung',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
-        }
-    }
+    # 'salt_db': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'laundry_runner_salt',
+    #     'USER': 'minsung',
+    #     'PASSWORD': 'password',
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
+    #     'OPTIONS': {
+    #         'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
+    #     }
+    # }
 }
 
 
