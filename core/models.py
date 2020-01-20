@@ -16,17 +16,30 @@ class Profile(models.Model):
         return self.name
 
 
-    def set_hash_password(self, row_password):
+    def set_hash_password(self, profile_id, row_password):
         salt = md5(os.urandom(32)).hexdigest()
-        Salt.objects.create(value = salt)
+        salt_obj = Salt(
+            profile_id=profile_id,
+            value = salt
+        )
+        salt_obj.save()
         hashed_password = sha256((salt + row_password).encode('utf8')).hexdigest()
         
         self.password = hashed_password
 
+    
+    def authenticate(self, salt, row_password):
+        hashed_password = sha256((salt + row_password).encode('utf8')).hexdigest()
+
+        return self.password == hashed_password
+
+
+
 
 class Salt(models.Model):
+    profile_id = models.IntegerField()
     value = models.CharField(max_length=32)
+
 
     def __str__(self):
         return self.value
-

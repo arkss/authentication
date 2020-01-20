@@ -87,7 +87,8 @@ DATABASES = {
         'OPTIONS': {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
         }
-    },
+    }
+    # ,
     # 'salt_db': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'laundry_runner_salt',

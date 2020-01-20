@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import auth, messages
-from .models import Profile
+from .models import Profile, Salt
 
 def main(request):
     return render(request, 'core/main.html')
@@ -12,8 +12,13 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        if user is not None:
-            auth.login(request, user)
+        profile = Profile.objects.get(username=username)
+        salt = Salt.objects.get(profile_id=profile.id)
+        
+        is_auth = profile.authenticate(salt.value, password)
+
+        if is_auth:
+            print("로그인이 성공적으로 완료되었습니다.")
         else:
             messages.error(request, "입력한 아아디와 비밀번호를 다시 확인해주세요.")
             return redirect('core:login')
@@ -37,7 +42,8 @@ def sign_up(request):
                 gender=gender,
                 email=email
             )
-            profile.set_hash_password(password)
+            profile.save()
+            profile.set_hash_password(profile.id, password)
             profile.save()
             return redirect('core:main')
         else:
@@ -59,11 +65,11 @@ def id_overlap_check(request):
     username = request.GET.get('username')
 
     try:
-        user = User.objects.get(username=username)
+        profile = Profile.objects.get(username=username)
     except:
-        user = None
+        profile = None
 
-    overlap = "pass" if user is None else "fail"
+    overlap = "pass" if profile is None else "fail"
     
     context = {
         'overlap': overlap,

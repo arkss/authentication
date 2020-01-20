@@ -19,7 +19,6 @@ class MyRouter:
         return None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        print(app_label)
         if app_label == 'salt':
             return db == 'salt_db'
         return None
