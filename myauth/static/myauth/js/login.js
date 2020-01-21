@@ -7,7 +7,29 @@ window.onload = () => {
 
     function loginSubmit(){
         loginForm.addEventListener('submit', ()=>{
-            fetch('')
-        })
+            fetch('http://localhost:8000/sign_up/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user: {
+                        username: inputUsername.value,
+                        password: inputPassword.value
+                    }
+                })
+            }).then(result => {
+                return result.json()
+            }).then(data => {
+                if (data.response == "success"){
+                    alert("로그인 성공!");
+                    location.href = "http://localhost:8000/main/"
+                } else {
+                    alert("로그인 실패!");
+                }
+            }).catch(e=>{
+                console.log(e);
+            });
+        });
     }
 }

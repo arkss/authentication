@@ -6,8 +6,7 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework import permissions
 from django.http import JsonResponse
 from django.shortcuts import render
-from .models import MyUser
-
+from .models import MyUser, Salt
 
 @api_view(['GET'])
 def get_current_user(request):
@@ -36,13 +35,40 @@ class CreateUserView(APIView):
 
 class UserLoginView(APIView):
     permission_classes = [permissions.AllowAny] 
-    renderer_classes = [TemplateHTMLRenderer]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     
     def get(self, request, *args, **kwargs):
         return Response(template_name='myauth/login.html')
 
     def post(self, request):
-        pass
+        user = request.data.get('user')
+        if not user:
+            return Response({
+                'response': 'error',
+                'message': 'No data found'
+            })
+        username = user.username
+        password = user.password
+
+        user = MyUser.objects.get(username=username)
+        salt = Salt.objects.get(user_id=user.id)
+        is_auth = user.autheticate(salt.value, row_password)
+
+        if is_auth:
+            # 토큰을 발급받는다
+
+            return Response({
+                'response': 'success',
+                'message': '로그인이 성공적으로 수행되었습니다.'
+            })
+        else:
+            return Response({
+                'response': 'error',
+                'message': '존재하지 않는 사용자입니다.'
+            })
+
+
+
 
 
 def main(request):

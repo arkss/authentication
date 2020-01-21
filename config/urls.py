@@ -9,5 +9,4 @@ urlpatterns = [
 
     path('token-auth/', obtain_jwt_token),
     path('', include('myauth.urls')),
-
 ]

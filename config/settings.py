@@ -169,5 +169,5 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'myauth.utils.custom_jwt_response_handler' 
 }
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
+
+AUTH_USER_MODEL = "myauth.MyUser" 

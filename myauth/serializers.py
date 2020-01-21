@@ -27,7 +27,7 @@ class UserSerializerWithToken(sz.ModelSerializer):
             username=validated_data['username'],
         )
         user.save()
-        user.set_password(user.id, validated_data['password'])
+        user.set_password(validated_data['password'])
         user.save()
         return user
 

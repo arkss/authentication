@@ -2,8 +2,7 @@ window.onload = () => {
     const inputUsername = document.getElementById("username");
     const inputPassword = document.getElementById("password");
     const inputCheckPassword = document.getElementById("check_password");
-    const inputFirstName = document.getElementById("first_name");
-    const inputLastName = document.getElementById("last_name");
+    const inputEmail = document.getElementById("email");
     const signUpForm = document.getElementById('sign_up_form');
     const fakeSubmit = document.getElementById('fake_submit');
 
@@ -21,7 +20,8 @@ window.onload = () => {
             body: JSON.stringify({
                 user: {
                     username: inputUsername.value,
-                    password: inputPassword.value
+                    password: inputPassword.value,
+                    email: inputEmail.value
                 }
             })
         }).then(result => {
