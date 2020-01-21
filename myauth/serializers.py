@@ -1,17 +1,15 @@
 from rest_framework import serializers as sz
 from rest_framework.settings import api_settings
-from django.contrib.auth.models import User
-from core.models import Profile
+from .models import MyUser
 
 
 class GetFullUserSerializer(sz.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id','username','is_superuser','first_name', 'last_name')
+        model = MyUser
+        fields = ('id','username')
 
 class UserSerializerWithToken(sz.ModelSerializer):
     password = sz.CharField(write_only=True)
-    token = sz.ReadOnlyField()
     token = sz.SerializerMethodField()
     
 
@@ -25,18 +23,17 @@ class UserSerializerWithToken(sz.ModelSerializer):
         return token
 
     def create(self, validated_data):
-        user = User.objects.create(
+        user = MyUser.objects.create(
             username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
         )
-        user.set_password(validated_data['password'])
+        user.save()
+        user.set_password(user.id, validated_data['password'])
         user.save()
         return user
 
     class Meta:
-        model = User
-        fields = ('token', 'username', 'password', 'first_name', 'last_name')
+        model = MyUser
+        fields = ('token', 'username', 'password')
 
     # def create(self, validated_data):
     #     profile = Profile.objects.create(

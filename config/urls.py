@@ -5,9 +5,9 @@ from .views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('', include('core.urls')),
+    path('core/', include('core.urls')),
 
     path('token-auth/', obtain_jwt_token),
-    path('social/', include('myauth.urls')),
+    path('', include('myauth.urls')),
 
 ]
