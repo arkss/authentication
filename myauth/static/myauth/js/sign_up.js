@@ -31,7 +31,7 @@ window.onload = () => {
                 alert("회원가입 성공!");
                 location.href = "http://localhost:8000/login/"
             } else {
-                alert("회원가입 실패!");
+                alert(data.message);
             }
         }).catch(e=>{
             console.log(e);

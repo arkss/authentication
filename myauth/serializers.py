@@ -25,6 +25,7 @@ class UserSerializerWithToken(sz.ModelSerializer):
     def create(self, validated_data):
         user = MyUser.objects.create(
             username=validated_data['username'],
+            email=validated_data['email'],
         )
         user.save()
         user.set_password(validated_data['password'])
@@ -33,7 +34,7 @@ class UserSerializerWithToken(sz.ModelSerializer):
 
     class Meta:
         model = MyUser
-        fields = ('token', 'username', 'password')
+        fields = ('token', 'username', 'password', 'email')
 
     # def create(self, validated_data):
     #     profile = Profile.objects.create(

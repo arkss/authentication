@@ -7,7 +7,7 @@ window.onload = () => {
 
     function loginSubmit(){
         loginForm.addEventListener('submit', ()=>{
-            fetch('http://localhost:8000/sign_up/', {
+            fetch('http://localhost:8000/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
