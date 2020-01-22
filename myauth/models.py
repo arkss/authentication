@@ -92,3 +92,4 @@ class Salt(models.Model):
 
     def __str__(self):
         return self.value
+

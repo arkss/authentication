@@ -21,8 +21,8 @@ window.onload = () => {
             }).then(result => {
                 return result.json()
             }).then(data => {
-                console.log(data);
                 if (data.response == "success"){
+                    // setCookie('jwttoken', data['jwt_token'], 3)
                     alert("로그인 성공!");
                     location.href = "http://localhost:8000/main/"
                 } else {
@@ -35,3 +35,25 @@ window.onload = () => {
         })
     };
 }
+
+function setCookie(cookie_name, value, days){
+    alert("setCookie");
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate()+days);
+    var cookie_value = escape(value) + ((days == null) ? '' : ';    expires=' + exdate.toUTCString());
+    document.cookie = cookie_name+'='+cookie_value;
+}
+
+function getCookie(cookie_name) {
+    var x, y;
+    var val = document.cookie.split(';');
+  
+    for (var i = 0; i < val.length; i++) {
+      x = val[i].substr(0, val[i].indexOf('='));
+      y = val[i].substr(val[i].indexOf('=') + 1);
+      x = x.replace(/^\s+|\s+$/g, ''); // 앞과 뒤의 공백 제거하기
+      if (x == cookie_name) {
+        return unescape(y); // unescape로 디코딩 후 값 리턴
+      }
+    }
+  }

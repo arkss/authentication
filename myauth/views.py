@@ -8,7 +8,10 @@ from django.shortcuts import render
 from django.contrib.auth.hashers import check_password
 from .models import MyUser, Salt
 from .serializers import GetFullUserSerializer, UserSerializerWithToken
-
+# jwt
+import jwt
+from datetime import datetime
+from django.conf import settings
 
 @api_view(['GET'])
 def get_current_user(request):
@@ -41,10 +44,7 @@ class UserLoginView(APIView):
     
     #TODO login 과 signup 이 각각 fake button click, submit 이벤트여서 request 넘어보는 값이 다르다. 
     def post(self, request, *args, **kargs):
-        print(request.headers)
         user = request.data.get('user')
-        print("@@@@@@@@@@@@@@@@@@@@")
-        print(user)
 
         if not user:
             return Response({
@@ -58,15 +58,16 @@ class UserLoginView(APIView):
         user = MyUser.objects.get(username=username)
 
         if check_password(password, user.password):
-            # 토큰을 발급받는다
-            print("비밀번호 확인")
-            # return Response({'response': 'success', 'message': 'user create sucessfully'})
-            return Response({
+            jwt_token = jwt_create(username)
+            cache.set('jwttoken',jwt_token)
+            print(cache.get('jwttoken'),"@@@@@@@@@")
+            response = Response({
                 'response': 'success',
-                'message': 'sucess login'
+                'message': 'sucess login',
             })
+            response.set_cookie('jwttoken', jwt_token)
+            return response
         else:
-            print("비밀번호 미확인")
             return Response({
                 'response': 'error',
                 'message': 'password is wrong'
@@ -77,6 +78,16 @@ class UserLoginView(APIView):
 
 
 
+def jwt_create(username):
+    now = datetime.now()
+    key = settings.SECRET_KEY
+    now_time = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)+str(now.second)
+    payload = {
+        "username": username,
+        "now_time": now_time
+    }
+    jwt_token = jwt.encode(payload, key, algorithm='HS256').decode('utf-8')
+    return jwt_token
 
 def main(request):
     return render(request, 'myauth/main.html')
