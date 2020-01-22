@@ -21,7 +21,7 @@
                     <div class="exp1">회원로그인</div>
                     <div class="exp2">회원님의 아이디와 비밀번호를 입력해 주세요.</div>
                 </div>
-                <form id="login_form" method="POST" action="">
+                <form id="login_form" method="POST" action="#">
                     {% csrf_token %}
                     <div class="login_input">
                         <div class="login_username_div">
@@ -68,5 +68,7 @@
             {% endfor %}
         {% endif %}
     </script>
+    <script src="{% static 'myauth/js/login.js'%}"></script>
 </body>
+
 </html>

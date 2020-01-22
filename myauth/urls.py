@@ -14,6 +14,8 @@ urlpatterns = [
     path('find_id/', find_id, name="find_id"),
     path('find_password/', find_password, name="find_password"),
     path('id_overlap_check/', id_overlap_check, name="id_overlap_check"),
+
+    path('redis_test/', redis_test),
 ]
 
 

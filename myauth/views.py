@@ -21,7 +21,6 @@ class CreateUserView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
 
     def post(self, request, *args, **kargs):
-        print(request.headers)
         user = request.data.get('user')
         if not user:
             return Response({'response': 'error', 'message': 'No data found'})
@@ -30,7 +29,6 @@ class CreateUserView(APIView):
         if serializer.is_valid():
             saved_user = serializer.save()
         else:
-            print(serializer.errors)
             return Response({'response': 'error', 'message': serializer.errors})
         return Response({'response': 'success', 'message': 'user create sucessfully'})
 
@@ -44,30 +42,34 @@ class UserLoginView(APIView):
     #TODO login 과 signup 이 각각 fake button click, submit 이벤트여서 request 넘어보는 값이 다르다. 
     def post(self, request, *args, **kargs):
         print(request.headers)
-        print(request.accepted_renderer.format)
-        username = request.data['username']
-        password = request.data['password']
+        user = request.data.get('user')
+        print("@@@@@@@@@@@@@@@@@@@@")
+        print(user)
 
-        # if not user:
-        #     return Response({
-        #         'response': 'error',
-        #         'message': 'No data found'
-        #     })
+        if not user:
+            return Response({
+                'response': 'error',
+                'message': 'No data found'
+            })
+
+        username = user['username']
+        password = user['password']
+        
         user = MyUser.objects.get(username=username)
 
         if check_password(password, user.password):
             # 토큰을 발급받는다
             print("비밀번호 확인")
-
+            # return Response({'response': 'success', 'message': 'user create sucessfully'})
             return Response({
                 'response': 'success',
-                'message': '로그인이 성공적으로 수행되었습니다.'
+                'message': 'sucess login'
             })
         else:
             print("비밀번호 미확인")
             return Response({
                 'response': 'error',
-                'message': '존재하지 않는 사용자입니다.'
+                'message': 'password is wrong'
             })
 
     def get(self, request, *args, **kargs):
@@ -107,3 +109,11 @@ def id_overlap_check(request):
         'overlap': overlap,
     }
     return JsonResponse(context)
+
+from django.core.cache import cache
+
+def redis_test(request):
+
+    users = cache.get_or_set('users',MyUser.objects.all().values('username'))
+
+    return JsonResponse(list(users),safe=False)
