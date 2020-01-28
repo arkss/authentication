@@ -3,22 +3,23 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework import permissions
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
+from django.contrib import messages
 from .models import MyUser, Salt
-from .serializers import GetFullUserSerializer, UserSerializerWithToken
+from .serializers import UserSerializer
 # jwt
 import jwt
 from datetime import datetime
 from django.conf import settings
-
-
-@api_view(['GET'])
-def get_current_user(request):
-    serializer = GetFullUserSerializer(request.user)
-    return Response(serializer.data)
+# mail 인증
+from uuid import uuid4
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 
 class CreateUserView(APIView):
@@ -28,14 +29,40 @@ class CreateUserView(APIView):
     def post(self, request, *args, **kargs):
         user = request.data.get('user')
         if not user:
-            return Response({'response': 'error', 'message': 'No data found'})
-
-        serializer = UserSerializerWithToken(data=user)
+            return Response({
+                'response': 'error',
+                'message': 'No data found'
+            })
+        serializer = UserSerializer(data=user)
         if serializer.is_valid():
-            saved_user = serializer.save()
+            user = serializer.save()
         else:
-            return Response({'response': 'error', 'message': serializer.errors})
-        return Response({'response': 'success', 'message': 'user create sucessfully'})
+            return Response({
+                'response': 'error',
+                'message': serializer.errors
+            })
+
+        uuid = uuid4()
+        cache.set(uuid, user.id)
+        current_site = get_current_site(request)
+        mail_content = render_to_string(
+            'myauth/user_activate_email.html',
+            {
+                'domain': current_site.domain,
+                'uuid': uuid
+            }
+        )
+        mail_subject = "회원가입 인증 메일입니다."
+        email = EmailMessage(mail_subject, mail_content, to=[user.email])
+        email_result = email.send()
+        if email_result == 1:
+            message = "이메일이 성공적으로 전송되었습니다."
+        else:
+            message = "이메일이 전송에 실패하였습니다."
+        return Response({
+            "response": "success",
+            "message": message
+        })
 
     def get(self, request, *args, **kargs):
         return Response(template_name='myauth/sign_up.html')
@@ -57,13 +84,17 @@ class UserLoginView(APIView):
 
         username = user['username']
         password = user['password']
-
         user = MyUser.objects.get(username=username)
+
+        if not user.is_active:
+            return Response({
+                'response': 'error',
+                'message': '이메일 인증이 완료되지 않았습니다.'
+            })
 
         if check_password(password, user.password):
             jwt_token = jwt_create(username)
             cache.set('jwttoken', jwt_token)
-            print(cache.get('jwttoken'), "@@@@@@@@@")
             response = Response({
                 'response': 'success',
                 'message': 'sucess login',
@@ -93,24 +124,66 @@ def jwt_create(username):
     return jwt_token
 
 
-def main(request):
-    return render(request, 'myauth/main.html')
-
-
-def login(request):
-    return render(request, 'myauth/login.html')
-
-
-def sign_up(request):
-    return render(request, 'myauth/sign_up.html')
-
-
-def find_id(request):
-    pass
-
-
+@api_view(['POST', 'GET'])
+@permission_classes([permissions.AllowAny])
+@renderer_classes([TemplateHTMLRenderer, JSONRenderer, ])
 def find_password(request):
-    pass
+    print(request.headers)
+    if request.method == "POST":
+        username = request.data.get('username')
+        user = MyUser.objects.get(username=username)
+
+        uuid = uuid4()
+        cache.set(uuid, user.id)
+        current_site = get_current_site(request)
+        mail_content = render_to_string(
+            'myauth/find_password_email.html',
+            {
+                'domain': current_site.domain,
+                'username': username,
+                'uuid': uuid
+            }
+        )
+        mail_subject = "비밀번호 변경 메일입니다."
+        email = EmailMessage(mail_subject, mail_content, to=[user.email])
+        email_result = email.send()
+        return Response({
+            'response': 'success',
+            'message': '메일이 성공적으로 보내졌습니다.'
+        })
+
+    else:
+        return Response(template_name='myauth/find_password.html')
+
+
+@api_view(['POST', 'GET'])
+@permission_classes([permissions.AllowAny])
+@renderer_classes([TemplateHTMLRenderer, JSONRenderer, ])
+def change_password(request, username, uuid):
+    print("@@@@@@@@@@@@@@@@")
+    print(request.headers)
+    if request.method == 'POST':
+        password = request.data.get('password')
+        check_password = request.data.get('check_password')
+        if password == check_password:
+            user = MyUser.objects.get(username=username)
+            user.set_password(password)
+            user.save()
+            return Response({
+                'response': 'success',
+                'message': '비밀번호가 변경되었습니다.'
+            })
+        else:
+            return Response({
+                'response': 'error',
+                'message': '입력한 비밀번호가 다릅니다.'
+            })
+    else:
+        context = {
+            'username': username,
+            'uuid': uuid
+        }
+        return Response(context, template_name='myauth/change_password.html')
 
 
 def id_overlap_check(request):
@@ -127,8 +200,28 @@ def id_overlap_check(request):
     return JsonResponse(context)
 
 
-def redis_test(request):
+def user_activate(request, uuid):
+    user_id = cache.get(uuid)
+    if user_id is None:
+        messages.info(request, "인증이 만료되었습니다.")
+        redirect('myauth:login')
 
-    users = cache.get_or_set('users', MyUser.objects.all().values('username'))
+    user = MyUser.objects.get(id=user_id)
 
-    return JsonResponse(list(users), safe=False)
+    if user is not None:
+        user.is_active = True
+        user.save()
+        messages.info(request, "메일 인증이 완료되었습니다.")
+    else:
+        messages.info(request, "해당 유저가 존재하지 않습니다.")
+
+    return redirect('myauth:login')
+
+
+@api_view(['GET', ])
+def main(request):
+    return Response(template_name='myauth/main.html')
+
+
+def find_id(request):
+    pass

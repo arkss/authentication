@@ -55,7 +55,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [
     {
@@ -75,10 +75,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
- 
+
 # DATABASE_ROUTERS = [
 #     'core.router.MyRouter',
-# ] 
+# ]
 
 DATABASES = {
     'default': {
@@ -105,8 +105,6 @@ DATABASES = {
     #     }
     # }
 }
-
-
 
 
 # Password validation
@@ -155,30 +153,36 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES' : (
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_AUTHENTICATION_CLASSES' : (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication' ,
-        'rest_framework.authentication.SessionAuthentication' ,
-        'rest_framework.authentication.BasicAuthentication' ,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
 }
 
-JWT_AUTH = { 
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'myauth.utils.custom_jwt_response_handler' 
-}
 
-
-AUTH_USER_MODEL = "myauth.MyUser" 
+AUTH_USER_MODEL = "myauth.MyUser"
 
 # redis
-CACHES = {  
+CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/", # 1번 DB
+        "LOCATION": "redis://127.0.0.1:6379/",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
+
+
+# mail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = 'rkdalstjd9@gmail.com'
+EMAIL_HOST_PASSWORD = 'mskang0710@@'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

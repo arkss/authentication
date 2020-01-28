@@ -27,13 +27,13 @@ window.onload = () => {
         }).then(result => {
             return result.json()
         }).then(data => {
-            if (data.response == "success"){
+            if (data.response == "success") {
                 alert("회원가입 성공!");
                 location.href = "http://localhost:8000/login/"
             } else {
                 alert(data.message);
             }
-        }).catch(e=>{
+        }).catch(e => {
             console.log(e);
         });
     };
