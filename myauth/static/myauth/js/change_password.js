@@ -1,14 +1,14 @@
 window.onload = () => {
     const inputPassword = document.getElementById("password")
-    const inputCheckPassword = document.getElementById("check")
+    const inputCheckPassword = document.getElementById("check_password")
     const changePasswordForm = document.getElementById("login_form");
 
     changePasswordSubmit();
 
     function changePasswordSubmit() {
         changePasswordForm.addEventListener('submit', () => {
-            fetch('http://localhost:8000/change_password/', {
-                qs: { username: username, uuid: uuid },
+
+            fetch('http://localhost:8000/change_password/' + uuid + '/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

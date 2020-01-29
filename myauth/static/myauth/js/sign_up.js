@@ -8,6 +8,7 @@ window.onload = () => {
 
     fakeSubmit.addEventListener('click', signUpSubmit);
 
+
     function signUpSubmit() {
         const isValid = validationCheck();
         if (!isValid) return;
@@ -42,6 +43,12 @@ window.onload = () => {
         if ($(".username_input").attr("check_result") === "fail") {
             alert("아이디 중복체크를 해주시기 바랍니다.");
             $(".username_input").focus();
+            return false;
+        }
+        alert(inputPassword.value.length);
+        if (inputPassword.value.length < 8) {
+            alert("비밀번호는 8자 이상으로 해주시기 바랍니다.");
+            document.querySelector('input[name="password1"]').focus();
             return false;
         }
 

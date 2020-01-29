@@ -159,14 +159,15 @@ def find_password(request):
 @api_view(['POST', 'GET'])
 @permission_classes([permissions.AllowAny])
 @renderer_classes([TemplateHTMLRenderer, JSONRenderer, ])
-def change_password(request, username, uuid):
+def change_password(request, uuid):
     print("@@@@@@@@@@@@@@@@")
     print(request.headers)
     if request.method == 'POST':
         password = request.data.get('password')
         check_password = request.data.get('check_password')
         if password == check_password:
-            user = MyUser.objects.get(username=username)
+            user_id = cache.get(uuid)
+            user = MyUser.objects.get(id=user_id)
             user.set_password(password)
             user.save()
             return Response({
@@ -180,7 +181,6 @@ def change_password(request, username, uuid):
             })
     else:
         context = {
-            'username': username,
             'uuid': uuid
         }
         return Response(context, template_name='myauth/change_password.html')
