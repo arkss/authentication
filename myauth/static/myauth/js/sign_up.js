@@ -45,7 +45,6 @@ window.onload = () => {
             $(".username_input").focus();
             return false;
         }
-        alert(inputPassword.value.length);
         if (inputPassword.value.length < 8) {
             alert("비밀번호는 8자 이상으로 해주시기 바랍니다.");
             document.querySelector('input[name="password1"]').focus();
@@ -57,6 +56,13 @@ window.onload = () => {
             document.querySelector('input[name="password1"]').focus();
             return false;
         }
+
+        const emailValidator = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!emailValidator.test(inputEmail.value)) {
+            alert("이메일이 유효하지 않습니다.");
+            return false;
+        }
+
         return true;
     }
 }
