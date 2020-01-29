@@ -31,10 +31,13 @@ class CreateUserView(APIView):
     def post(self, request, *args, **kargs):
         user = request.data.get('user')
         if not user:
-            return Response({
-                'response': 'error',
-                'message': 'No data found'
-            })
+            return Response(
+                data={
+                    'response': 'error',
+                    'message': 'No data found'
+                },
+                status=200
+            )
         serializer = UserSerializer(data=user)
         if serializer.is_valid():
             user = serializer.save()
