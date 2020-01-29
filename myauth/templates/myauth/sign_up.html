@@ -72,6 +72,8 @@ integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="ano
 <script src="{% static 'myauth/js/sign_up.js'%}"></script>
 <!-- 아이디 중복 체크 (ajax) -->
 <script>
+console.log("{{csrf_token}}");
+
 function id_overlap_check() {
     $('.username_input').change(function () {
         $('#id_check_sucess').hide();

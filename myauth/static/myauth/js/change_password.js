@@ -2,6 +2,7 @@ window.onload = () => {
     const inputPassword = document.getElementById("password")
     const inputCheckPassword = document.getElementById("check_password")
     const changePasswordForm = document.getElementById("login_form");
+    const inputcsrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
 
     changePasswordSubmit();
 
@@ -12,7 +13,8 @@ window.onload = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRFToken': inputcsrfToken.value
                 },
                 body: JSON.stringify({
                     password: inputPassword.value,

@@ -1,6 +1,7 @@
 window.onload = () => {
     const inputUsername = document.getElementById("username");
     const findPasswordForm = document.getElementById("login_form");
+    const inputcsrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
 
     findPasswordSubmit();
 
@@ -10,7 +11,8 @@ window.onload = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRFToken': inputcsrfToken.value
                 },
                 body: JSON.stringify({
                     username: inputUsername.value,

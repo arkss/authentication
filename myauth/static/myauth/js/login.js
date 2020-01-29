@@ -2,6 +2,7 @@ window.onload = () => {
     const inputUsername = document.getElementById("username");
     const inputPassword = document.getElementById("password");
     const loginForm = document.getElementById("login_form");
+    const inputcsrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
 
     loginSubmit();
 
@@ -10,7 +11,8 @@ window.onload = () => {
             fetch('http://localhost:8000/login/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': inputcsrfToken.value
                 },
                 body: JSON.stringify({
                     user: {

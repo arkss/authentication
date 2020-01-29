@@ -21,6 +21,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 
+from django.views.decorators.csrf import csrf_exempt
+
 
 class CreateUserView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -128,7 +130,6 @@ def jwt_create(username):
 @permission_classes([permissions.AllowAny])
 @renderer_classes([TemplateHTMLRenderer, JSONRenderer, ])
 def find_password(request):
-    print(request.headers)
     if request.method == "POST":
         username = request.data.get('username')
         user = MyUser.objects.get(username=username)
@@ -160,8 +161,6 @@ def find_password(request):
 @permission_classes([permissions.AllowAny])
 @renderer_classes([TemplateHTMLRenderer, JSONRenderer, ])
 def change_password(request, uuid):
-    print("@@@@@@@@@@@@@@@@")
-    print(request.headers)
     if request.method == 'POST':
         password = request.data.get('password')
         check_password = request.data.get('check_password')
