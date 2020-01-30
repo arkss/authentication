@@ -13,7 +13,7 @@ window.onload = () => {
         const isValid = validationCheck();
         if (!isValid) return;
 
-        fetch('http://localhost:8000/sign_up/', {
+        fetch('/sign_up/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,11 +27,13 @@ window.onload = () => {
                 }
             })
         }).then(result => {
+            // result.status : response status 확인
+            console.log(result.status);
             return result.json()
         }).then(data => {
             if (data.response == "success") {
                 alert("회원가입 성공!");
-                location.href = "http://localhost:8000/login/"
+                location.href = "/login/"
             } else {
                 alert(data.message);
             }

@@ -36,7 +36,6 @@ class CreateUserView(APIView):
                     'response': 'error',
                     'message': 'No data found'
                 },
-                status=200
             )
         serializer = UserSerializer(data=user)
         if serializer.is_valid():

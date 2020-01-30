@@ -55,30 +55,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['email']
 
 
-# class MyUser(models.Model):
-#     username = models.CharField(max_length=30)
-#     password = models.CharField(max_length=64)
-
-#     def __str__(self):
-#         return self.username
-
-    # def set_password(self, row_password):
-    #     salt = md5(os.urandom(32)).hexdigest()
-    #     salt_obj = Salt(
-    #         user_id = self.id,
-    #         value = salt
-    #     )
-    #     salt_obj.save()
-    #     hashed_password = sha256((salt + row_password).encode('utf8')).hexdigest()
-
-    #     self.password = hashed_password
-
-    # def authenticate(self, salt, row_password):
-    #     hashed_password = sha256((salt + row_password).encode('utf8')).hexdigest()
-
-    #     return self.password == hashed_password
-
-
 class Salt(models.Model):
     user_id = models.IntegerField()
     value = models.CharField(max_length=32)
