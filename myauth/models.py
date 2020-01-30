@@ -27,15 +27,17 @@ class UserManager(BaseUserManager):
             username=username,
             password=password
         )
-        user.is_admin = True
-        user.is_superuser = True
-        user.is_staff = True
+        user.role = "0"
         user.save(using=self._db)
         return user
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
-
+    ROLE_CHOICES = (
+        ('0', '일반 유저'),
+        ('5', '세탁소 사장'),
+        ('10', '관리자')
+    )
     objects = UserManager()
 
     email = models.EmailField(
@@ -46,13 +48,19 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         null=False,
         unique=True
     )
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES)
+
+    #is_active = models.BooleanField(default=True)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
+
+    @property
+    def is_staff(self):
+        return self.role == "0"
+
+    @property
+    def is_superuser(self):
+        return self.role == "0"
 
 
 class Salt(models.Model):
